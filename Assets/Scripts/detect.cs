@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class detect : MonoBehaviour
 {
-
+    public int id;
     [SerializeField] public TextMeshProUGUI title;
     [SerializeField] public TextMeshProUGUI lenght;
     [SerializeField] private AudioClip song;
@@ -29,8 +29,9 @@ public class detect : MonoBehaviour
         
     }
 
-    public void setting(string name, float lenghtn, AudioClip clip)
+    public void setting(int idn, string name, float lenghtn, AudioClip clip)
     {
+        id = idn;
         title.text = name;
         lenght.text = lenghtn.ToString();
         song = clip;
@@ -39,7 +40,7 @@ public class detect : MonoBehaviour
 
     public void Play()
     {
-        player.PlayClip(song);
+        player.PlayClip(song, id);
 
     }
 
