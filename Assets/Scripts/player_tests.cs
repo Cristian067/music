@@ -4,11 +4,16 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+//using UnityEngine.Windows;
+using UnityEngine.Networking;
+using System.IO;
 
-public class player : MonoBehaviour
+
+public class player_test : MonoBehaviour
 {
 
     private AudioClip[] songs;
+    private string[] songname;
 
     private int idPlaying;
 
@@ -27,6 +32,8 @@ public class player : MonoBehaviour
 
     private detect detectSong;
 
+    [SerializeField]private TextMeshProUGUI pathtext;
+
     private bool isPaused = false;
 
     private int looped = 0;
@@ -39,12 +46,39 @@ public class player : MonoBehaviour
     {
         slider.value = aSource.volume;
 
-        songs = Resources.LoadAll<AudioClip>("audios");
+        string[] songsdir = Directory.GetFiles(Application.dataPath + "/Resources/audios/", "*.mp3") /*"file:///" +*/ /*Application.dataPath*/;
+
+        Debug.Log(songsdir[0]);
+
+        ///songs; //Resources.LoadAll<AudioClip>("audios");
+
+        //Debug.Log(UnityWebRequestMultimedia.GetAudioClip(songsdir), AudioType.MPEG);
+
+        songs = new AudioClip[songsdir.Length];
+        songname = new string[songsdir.Length];
+            //UnityWebRequestMultimedia.GetAudioClip(songsdir, AudioType.MPEG);
+        //Debug.Log(Resources.LoadAll<AudioClip>("songsdir/Resources/audios"));
 
         //foreach (AudioClip clip in songs)
-        for(int i = 0; i < songs.Length; i++) 
+
+        //mandar a cargar los audios
+        for (int i = 0; i < songsdir.Length; i++) 
         {
-            Debug.Log(songs[i].name);
+
+            string path = "file:///" + songsdir[i];
+
+            Debug.Log(path);
+
+            WWW www = new WWW(path);
+
+            songs[i] = www.GetAudioClip();
+            songname[i] = Path.GetFileNameWithoutExtension(songsdir[i]);
+            //Debug.Log(songname[i]);
+            
+
+
+
+            Debug.Log(songname[i]);
             Debug.Log(songs[i].length);
             songsList.Add(songs[i]);
 
@@ -54,7 +88,7 @@ public class player : MonoBehaviour
 
             detectSong = songMen.GetComponent<detect>();
 
-            detectSong.setting(i, songs[i].name, songs[i].length, songs[i]);
+            detectSong.setting(i, songname[i], songs[i].length, songs[i]);
 
             /*
             if (TryGetComponent<detect>(out detect hinge))
@@ -86,7 +120,7 @@ public class player : MonoBehaviour
         }
         else if (looped == 1)
         {
-            if(!aSource.isPlaying)
+            if(!aSource.isPlaying && !isPaused)
             {
                 idPlaying++;
                 aSource.clip = songsList[idPlaying];
@@ -102,7 +136,7 @@ public class player : MonoBehaviour
             }
 
         }
-        else if (looped == 2)
+        else if (looped == 2 && !isPaused)
         {
             if (!aSource.isPlaying)
             {
