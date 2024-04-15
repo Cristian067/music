@@ -25,6 +25,10 @@ public class player : MonoBehaviour
 
     [SerializeField] private Slider slider;
 
+    [SerializeField] private Slider songLenght;
+
+    [SerializeField] private TextMeshProUGUI songNameText;
+
     private detect detectSong;
 
     private bool isPaused = false;
@@ -37,25 +41,17 @@ public class player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+
         slider.value = aSource.volume;
 
-        songs = Resources.LoadAll<AudioClip>("audios");
+        ReloadSongs();
+
+        
         
 
         //foreach (AudioClip clip in songs)
-        for(int i = 0; i < songs.Length; i++) 
-        {
-            Debug.Log(songs[i].name);
-            Debug.Log(songs[i].length);
-            songsList.Add(songs[i]);
-
-            GameObject songMen = Instantiate(songMenu);
-
-            songMen.transform.SetParent(Grid.transform, true);
-
-            detectSong = songMen.GetComponent<detect>();
-
-            detectSong.setting(i, songs[i].name, songs[i].length, songs[i]);
+        
 
             /*
             if (TryGetComponent<detect>(out detect hinge))
@@ -69,7 +65,7 @@ public class player : MonoBehaviour
             //aSource.clip = clip;
             //aSource.Play();
 
-        }
+        
 
         //Debug.Log(Resources.LoadAll("/audios"));
         //Debug.Log(songs);
@@ -79,11 +75,13 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+
+        StartCoroutine(SongTime());
 
         if (looped == 0)
         {
-            if (!aSource.isPlaying)
+            if (!aSource.isPlaying && !isPaused)
             {
                 aSource.clip = null;
             }
@@ -118,12 +116,15 @@ public class player : MonoBehaviour
 
         }
 
+        songLenght.maxValue = songs[idPlaying].length;
+
 
     }
 
 
     public void PlayClip(AudioClip song, int id)
     {
+        songNameText.text = song.name;
         aSource.clip = songsList[id];
         idPlaying = id;
         isPaused = false;
@@ -220,6 +221,7 @@ public class player : MonoBehaviour
     public void StopSong()
     {
         aSource.Stop();
+        idPlaying = -1;
     }
 
     public int GetLoopState()
@@ -227,6 +229,42 @@ public class player : MonoBehaviour
 
         return looped;
 
+    }
+
+     public IEnumerator SongTime()
+    {
+        while (aSource.isPlaying)
+        {
+            songLenght.value = aSource.time;
+            yield return null;
+        }
+        
+    }
+
+    public void ReloadSongs()
+    {
+        songs = Resources.LoadAll<AudioClip>("audios");
+
+    for (int i = 0; i < songs.Length; i++)
+    {
+            
+        Debug.Log(songs[i].name);
+        Debug.Log(songs[i].length);
+            if (!songsList[i] == songs[i])
+            {
+                songsList.Add(songs[i]);
+
+                GameObject songMen = Instantiate(songMenu);
+
+                songMen.transform.SetParent(Grid.transform, true);
+
+                detectSong = songMen.GetComponent<detect>();
+
+                detectSong.setting(i, songs[i].name, songs[i].length, songs[i]);
+            }
+        
+    
+    }
     }
 
 }

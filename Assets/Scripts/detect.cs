@@ -41,6 +41,7 @@ public class detect : MonoBehaviour
     public void Play()
     {
         player.PlayClip(song, id);
+        player.StartCoroutine(player.SongTime());
 
     }
 
