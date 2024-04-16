@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -28,6 +29,8 @@ public class player : MonoBehaviour
     [SerializeField] private Slider songLenght;
 
     [SerializeField] private TextMeshProUGUI songNameText;
+
+    [SerializeField] private GameObject containerObject;
 
     private detect detectSong;
 
@@ -116,7 +119,11 @@ public class player : MonoBehaviour
 
         }
 
-        songLenght.maxValue = songs[idPlaying].length;
+        if (aSource.isPlaying)
+        {
+            songLenght.maxValue = songs[idPlaying].length;
+        }
+        
 
 
     }
@@ -222,6 +229,9 @@ public class player : MonoBehaviour
     {
         aSource.Stop();
         idPlaying = -1;
+        songNameText.text = string.Empty;
+        songLenght.value = 0;
+        
     }
 
     public int GetLoopState()
@@ -245,26 +255,27 @@ public class player : MonoBehaviour
     {
         songs = Resources.LoadAll<AudioClip>("audios");
 
-    for (int i = 0; i < songs.Length; i++)
-    {
-            
-        Debug.Log(songs[i].name);
-        Debug.Log(songs[i].length);
-            if (!songsList[i] == songs[i])
-            {
-                songsList.Add(songs[i]);
+        foreach (Transform child in Grid.transform)
+        {
+            Destroy(child.gameObject);
+        }
 
-                GameObject songMen = Instantiate(songMenu);
+        for (int i = 0; i < songs.Length; i++)
+        {
+            Debug.Log(songs[i].name);
+            Debug.Log(songs[i].length);
+            songsList.Add(songs[i]);
 
-                songMen.transform.SetParent(Grid.transform, true);
+            GameObject songMen = Instantiate(songMenu);
+            songMen.name = "songMenu";
+            songMen.transform.SetParent(Grid.transform, true);
 
-                detectSong = songMen.GetComponent<detect>();
+            detectSong = songMen.GetComponent<detect>();
 
-                detectSong.setting(i, songs[i].name, songs[i].length, songs[i]);
-            }
-        
+            detectSong.setting(i, songs[i].name, songs[i].length, songs[i]);
+
     
-    }
+        }
     }
 
 }
