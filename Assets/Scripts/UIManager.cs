@@ -7,13 +7,17 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]private GameObject[] loopFases;
 
+    [SerializeField] private GameObject[] pauseFases;
+
+    [SerializeField] private GameObject[] randomFases;
+
     private player player;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        
         player = FindAnyObjectByType<player>();
         
     }
@@ -42,4 +46,38 @@ public class UIManager : MonoBehaviour
         }
 
     }
+
+    public void PauseButtonChange(bool isPause)
+    {
+        if(isPause)
+        {
+            pauseFases[0].SetActive(false);
+            pauseFases[1].SetActive(true);
+            
+        }
+        else if (!isPause)
+        {
+            pauseFases[0].SetActive(!false);
+            pauseFases[1].SetActive(!true);
+        }
+
+    }
+
+    public void RandomButtonChange(bool isRandom)
+    {
+        if (isRandom)
+        {
+            randomFases[0].SetActive(false);
+            randomFases[1].SetActive(true);
+
+        }
+        else if (!isRandom)
+        {
+            randomFases[0].SetActive(!false);
+            randomFases[1].SetActive(!true);
+        }
+
+    }
+
+
 }

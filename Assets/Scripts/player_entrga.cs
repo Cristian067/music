@@ -5,9 +5,11 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class player : MonoBehaviour
 {
+    private UIManager uiManager;
 
     private AudioClip[] songs;
 
@@ -40,6 +42,8 @@ public class player : MonoBehaviour
 
     private bool isMuted = false;
 
+    [SerializeField]private bool isRandom = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +54,9 @@ public class player : MonoBehaviour
 
         ReloadSongs();
 
+        uiManager = FindAnyObjectByType<UIManager>();
+
+       
         
         
 
@@ -81,6 +88,15 @@ public class player : MonoBehaviour
 
 
         StartCoroutine(SongTime());
+
+
+
+        if (aSource.clip == null && isRandom)
+        {
+            int random = Random.Range(0, songs.Length);
+            PlayClip(songsList[random],random );
+            aSource.Play();
+        }
 
         if (looped == 0)
         {
@@ -135,8 +151,10 @@ public class player : MonoBehaviour
         aSource.clip = songsList[id];
         idPlaying = id;
         isPaused = false;
+        uiManager.PauseButtonChange(isPaused);
 
         aSource.Play();
+
 
     }
 
@@ -155,6 +173,9 @@ public class player : MonoBehaviour
             aSource.UnPause();
             isPaused = false;
         }
+
+        uiManager.PauseButtonChange(isPaused);
+        
         //aSource.Pause();
     }
 
@@ -184,9 +205,9 @@ public class player : MonoBehaviour
         if (idPlaying >= songsList.Count)
         {
             idPlaying = 0;
-            aSource.clip = songsList[idPlaying];
+            //PlayClip(songsList[idPlaying], idPlaying);
         }
-        aSource.clip = songsList[idPlaying];
+        PlayClip(songsList[idPlaying], idPlaying);
         
         
         aSource.Play();
@@ -200,7 +221,7 @@ public class player : MonoBehaviour
         {
             idPlaying = 0;
         }
-        aSource.clip = songsList[idPlaying];
+        PlayClip(songsList[idPlaying], idPlaying);
         aSource.Play();
     }
 
@@ -227,6 +248,7 @@ public class player : MonoBehaviour
 
     public void StopSong()
     {
+        isRandom = false;
         aSource.Stop();
         idPlaying = -1;
         songNameText.text = string.Empty;
@@ -251,9 +273,38 @@ public class player : MonoBehaviour
         
     }
 
+    public void RandomButton()
+    {
+        if (!isRandom)
+        {
+            isRandom = true;
+
+        }
+        else if (isRandom)
+        {
+            isRandom = false;
+        }
+
+        uiManager.RandomButtonChange(isRandom);
+        
+        
+    }
+
+    /*
+    public IEnumerator RandomSong()
+    {
+        if (!aSource.isPlaying && random)
+        {
+            aSource.clip = songsList[Random.Range(0, songs.Length)];
+            yield return null; //new WaitForSeconds(1);
+        }
+
+    }*/
+
     public void ReloadSongs()
     {
         songs = Resources.LoadAll<AudioClip>("audios");
+        songsList.Clear();
 
         foreach (Transform child in Grid.transform)
         {
