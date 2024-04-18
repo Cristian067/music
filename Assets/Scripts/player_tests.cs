@@ -71,6 +71,7 @@ public class player_test : MonoBehaviour
 
             WWW www = new WWW(path);
 
+
             songs[i] = www.GetAudioClip();
             songname[i] = Path.GetFileNameWithoutExtension(songsdir[i]);
             //Debug.Log(songname[i]);

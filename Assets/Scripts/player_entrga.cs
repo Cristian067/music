@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -15,7 +17,6 @@ public class player : MonoBehaviour
 
     private int idPlaying;
 
-    //[SerializeField]private List<int> songsList;
     [SerializeField]private List<AudioClip> songsList;
 
     [SerializeField] private AudioSource aSource;
@@ -33,6 +34,9 @@ public class player : MonoBehaviour
     [SerializeField] private TextMeshProUGUI songNameText;
 
     [SerializeField] private GameObject containerObject;
+
+    [SerializeField] private Texture2D backgroundImg ;
+    [SerializeField] private Image background;
 
     private detect detectSong;
 
@@ -57,39 +61,13 @@ public class player : MonoBehaviour
         uiManager = FindAnyObjectByType<UIManager>();
 
        
-        
-        
-
-        //foreach (AudioClip clip in songs)
-        
-
-            /*
-            if (TryGetComponent<detect>(out detect hinge))
-            {
-                hinge.naming(clip.name,clip.length);
-            }
-            */
-
-
-            //Instantiate(clip);
-            //aSource.clip = clip;
-            //aSource.Play();
-
-        
-
-        //Debug.Log(Resources.LoadAll("/audios"));
-        //Debug.Log(songs);
 
     }
 
     // Update is called once per frame
     void Update()
     {
-
-
         StartCoroutine(SongTime());
-
-
 
         if (aSource.clip == null && isRandom)
         {
@@ -139,8 +117,6 @@ public class player : MonoBehaviour
         {
             songLenght.maxValue = songs[idPlaying].length;
         }
-        
-
 
     }
 
@@ -154,8 +130,6 @@ public class player : MonoBehaviour
         uiManager.PauseButtonChange(isPaused);
 
         aSource.Play();
-
-
     }
 
 
@@ -176,7 +150,6 @@ public class player : MonoBehaviour
 
         uiManager.PauseButtonChange(isPaused);
         
-        //aSource.Pause();
     }
 
     public void Loop()
@@ -328,5 +301,22 @@ public class player : MonoBehaviour
     
         }
     }
+
+    public void ChangeBackground()
+    {
+        //Texture2D background = new Texture2D(2, 2);
+        string path = EditorUtility.OpenFilePanel("Select a image for the background", "", "png");
+
+        if (path.Length != 0)
+        {
+            WWW www = new WWW("file:///" + path);
+
+            backgroundImg = www.texture;
+            //www.texture = EditorUtility.OpenFilePanel("Select a image for the background", "", "png");
+            //background = www.LoadImageIntoTexture(backgroundimg);
+            //background.sprite = www.LoadImageIntoTexture(backgroundImg);
+        }
+    }
+
 
 }
