@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using UnityEngine.Networking;
 
 public class player : MonoBehaviour
 {
@@ -38,6 +39,8 @@ public class player : MonoBehaviour
     [SerializeField] private Texture2D backgroundImg ;
     [SerializeField] private Image background;
 
+    
+
     private detect detectSong;
 
     private bool isPaused = false;
@@ -60,6 +63,9 @@ public class player : MonoBehaviour
 
         uiManager = FindAnyObjectByType<UIManager>();
 
+
+        
+
        
 
     }
@@ -73,7 +79,7 @@ public class player : MonoBehaviour
         {
             int random = Random.Range(0, songs.Length);
             PlayClip(songsList[random],random );
-            aSource.Play();
+            
         }
 
         if (looped == 0)
@@ -89,15 +95,13 @@ public class player : MonoBehaviour
             if(!aSource.isPlaying && !isPaused)
             {
                 idPlaying++;
-                aSource.clip = songsList[idPlaying];
-                
-                aSource.Play();
+                PlayClip(songs[idPlaying], idPlaying);
                 Debug.Log(songsList[idPlaying]);
                 if(idPlaying > songsList.Count)
                 {
                     idPlaying = 0;
-                    aSource.clip = songsList[idPlaying-1];
-                    
+                    PlayClip(songs[idPlaying], idPlaying);
+
                 }
             }
 
@@ -106,8 +110,7 @@ public class player : MonoBehaviour
         {
             if (!aSource.isPlaying)
             {
-                aSource.clip = songsList[idPlaying];
-                aSource.Play();
+                PlayClip(songs[idPlaying], idPlaying);
                 Debug.Log(songsList[idPlaying]);
             }
 
@@ -277,6 +280,7 @@ public class player : MonoBehaviour
     public void ReloadSongs()
     {
         songs = Resources.LoadAll<AudioClip>("audios");
+        
         songsList.Clear();
 
         foreach (Transform child in Grid.transform)
@@ -298,25 +302,15 @@ public class player : MonoBehaviour
 
             detectSong.setting(i, songs[i].name, songs[i].length, songs[i]);
 
+            
+
     
         }
     }
+    
+    
 
-    public void ChangeBackground()
-    {
-        //Texture2D background = new Texture2D(2, 2);
-        string path = EditorUtility.OpenFilePanel("Select a image for the background", "", "png");
+    
 
-        if (path.Length != 0)
-        {
-            WWW www = new WWW("file:///" + path);
-
-            backgroundImg = www.texture;
-            //www.texture = EditorUtility.OpenFilePanel("Select a image for the background", "", "png");
-            //background = www.LoadImageIntoTexture(backgroundimg);
-            //background.sprite = www.LoadImageIntoTexture(backgroundImg);
-        }
-    }
-
-
+    
 }
